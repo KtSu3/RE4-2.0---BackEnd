@@ -1,1 +1,1 @@
-# RE4-2.0---BackEnd
+This project is for inventory control and production registration. Backend developed in Python3 with Django.
