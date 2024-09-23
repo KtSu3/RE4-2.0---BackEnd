@@ -1,12 +1,8 @@
 from rest_framework import serializers  
 from .models import CadastroViabilidade, User, CadastroTecnicos, Modelos, Fabricantes, Produtos, ConclusaoTeste, Equipamentos, Vendedores, Assuntos, Tecnicos
 
-class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField()
 
-
-#Project ---
+#Project-----------------------------------------------------------------------------------------------#
 
 class TecSerializer(serializers.ModelSerializer):
     class Meta:
@@ -70,32 +66,6 @@ class CadastroTecnicosSerializer(serializers.ModelSerializer):
         model = CadastroTecnicos
         fields = ['projeto_responsavel', 'tecnico_responsavel_id', 'assunto_id', 'info_atendimento']
 
-#----------------------------------Estoque----------------------------------#
-
-class EquipamentoSerialier(serializers.ModelSerializer):
-    produtos_id = serializers.PrimaryKeyRelatedField(
-        queryset=Produtos.objects.all(),
-        source='produtos'
-    )
-    conclusao_teste_id = serializers.PrimaryKeyRelatedField(
-        queryset=ConclusaoTeste.objects.all(),
-        source='conclusao_teste'
-    )
-    fabricante_id = serializers.PrimaryKeyRelatedField(
-        queryset=Fabricantes.objects.all(),
-        source='fabricante'
-    )
-    modelo_id = serializers.PrimaryKeyRelatedField(
-        queryset=Modelos.objects.all(),
-        source='modelo'
-    )
-    class Meta: 
-        model = Equipamentos
-        fields = ['numero_serie', 'observacao', 'conclusao_teste_id', 'fabricante_id', 'modelo_id', 'produtos_id' ]
-
-    def create(self, validated_data):
-        return super().create(validated_data)
-    
 class CadastroViabilidadeSerializer(serializers.ModelSerializer):
     vendedor_responsavel_id = serializers.PrimaryKeyRelatedField(
         queryset=Vendedores.objects.all(),
@@ -123,8 +93,35 @@ class TecnicoListSerializer(serializers.ModelSerializer):
         model = CadastroTecnicos
         fields = ['projeto_responsavel', 'tecnico_responsavel', 'assunto', 'info_atendimento', 'date']
 
+#--------------------------------------------------------------------------------------------------------#
 
-    
+
+#Stock---------------------------------------------------------------------------------------------------#
+
+class EquipamentoSerialier(serializers.ModelSerializer):
+    produtos_id = serializers.PrimaryKeyRelatedField(
+        queryset=Produtos.objects.all(),
+        source='produtos'
+    )
+    conclusao_teste_id = serializers.PrimaryKeyRelatedField(
+        queryset=ConclusaoTeste.objects.all(),
+        source='conclusao_teste'
+    )
+    fabricante_id = serializers.PrimaryKeyRelatedField(
+        queryset=Fabricantes.objects.all(),
+        source='fabricante'
+    )
+    modelo_id = serializers.PrimaryKeyRelatedField(
+        queryset=Modelos.objects.all(),
+        source='modelo'
+    )
+    class Meta: 
+        model = Equipamentos
+        fields = ['numero_serie', 'observacao', 'conclusao_teste_id', 'fabricante_id', 'modelo_id', 'produtos_id', 'usuario']
+
+    def create(self, validated_data):
+        return super().create(validated_data)
+
 class ListFabricante(serializers.ModelSerializer):
     class Meta:
         model = Fabricantes
@@ -163,23 +160,31 @@ class ConclusaoTesteSerializer(serializers.ModelSerializer):
         model = ConclusaoTeste
         fields = ['id','conclusao_teste']
 
-
-
 class EquipamentosListSerializer(serializers.ModelSerializer):
     date = serializers.SerializerMethodField()
     fabricante = FabricanteSerializer() 
     modelo = ModeloSerializer()          
     produtos = ProdutoSerializer()      
-    conclusao_teste = ConclusaoTesteSerializer()  
+    conclusao_teste = ConclusaoTesteSerializer()
+   
     
     class Meta:
         model = Equipamentos
         fields = ['produtos', 'modelo', 'fabricante', 'conclusao_teste', 'numero_serie', 'observacao', 'date']
     def get_date(self, obj):
          return obj.date.strftime('%Y-%m-%d')
+    
+#--------------------------------------------------------------------------------------------------------#
 
+#Autentication-------------------------------------------------------------------------------------------#
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email', 'username', 'grup', 'password']
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+#--------------------------------------------------------------------------------------------------------#

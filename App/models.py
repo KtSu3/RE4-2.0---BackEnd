@@ -3,6 +3,10 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser
 from dirtyfields import DirtyFieldsMixin 
 
+
+
+#Status -------------------------------------------------------------------------------------#
+
 class Campo1(models.TextChoices):
     SIM = 'S'
     NAO = 'N'
@@ -16,20 +20,27 @@ class Status(models.TextChoices):
     RETESTADO = 'RE', 'Retestado'
     EMCAMPO = 'EC', 'Campo'
 
+#--------------------------------------------------------------------------------------------#
+
+#Project-------------------------------------------------------------------------------------#
+
 class Vendedores(models.Model):
     vendedor = models.CharField(max_length=100, unique=True)
+   
 
     def __str__(self):
         return f"{self.vendedor}"
     
 class Tecnicos(models.Model):
     tecnico = models.CharField(max_length=100, unique=True)
+ 
 
     def __str__(self):
         return f"{self.tecnico}"
 
 class Assuntos(models.Model):
     assunto = models.CharField(max_length=100, unique=True)
+    
 
     def __str__(self):
         return f"{self.assunto}"
@@ -58,6 +69,9 @@ class CadastroTecnicos(models.Model):
         return (f"{self.projeto_responsavel} - {self.tecnico_responsavel} - {self.info_atendimento} - "
                 f"{self.assunto} - {self.date}")
 
+#--------------------------------------------------------------------------------------------#
+
+
 #------------------------------------#Stock------------------------------------------------#
 
 class Fabricantes(models.Model):
@@ -83,7 +97,7 @@ class Equipamentos(models.Model):
     conclusao_teste = models.ForeignKey(ConclusaoTeste, on_delete=models.CASCADE)
     numero_serie = models.CharField(max_length=100)
     observacao = models.TextField()
-    username = models.CharField(max_length=100)
+    usuario = models.CharField(max_length=100)
     date = models.DateField(auto_now=True)
 
 class Movimentacoes(models.Model):
@@ -96,8 +110,10 @@ class Movimentacoes(models.Model):
     observacao = models.TextField() 
     date = models.DateField(auto_now=True)
 
+#--------------------------------------------------------------------------------------------#
 
-#Autentication ---
+
+#Autentication ------------------------------------------------------------------------------#
 
 class User(AbstractBaseUser, DirtyFieldsMixin):
     email = models.CharField(max_length=255, unique=True)
@@ -113,3 +129,5 @@ class User(AbstractBaseUser, DirtyFieldsMixin):
         if not self.pk or 'password' in self.get_dirty_fields():
             self.password = make_password(self.password)
         super().save(*args, **kwargs)
+
+#--------------------------------------------------------------------------------------------#
