@@ -14,79 +14,30 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 
-class ListViabilidadeView(APIView):
-    def get(self, request):
-        viabilidades = CadastroViabilidade.objects.all()
-        serializer = ViabilidadeListSerializer(viabilidades, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-class ListTecnicoView(APIView):
-    def get(self, request):
-        viabilidades = CadastroTecnicos.objects.all()
-        serializer = TecnicoListSerializer(viabilidades, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
-# Autenticate ---
-
-class LoginView(APIView):
+#Project-------------------------------------------------------------------------------------------------------#
+#Create
+class CadastrarAtendimento(APIView):
     def post(self, request):
-        email = request.data.get('email')
-        password = request.data.get('password')
-
-        if not email or not password:
-            return Response({'error': 'Email e senha são obrigatórios.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            return Response({'error': 'Usuário não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
-
-        if not check_password(password, user.password):
-            return Response({'error': 'Senha inválida.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        serializer = UserSerializer(user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-
-@api_view(['PUT','POST'])
-def user_view(request):
-    try:
-        user = User.objects.get(email=request.data['email'])
-        serializer = UserSerializer(user, data=request.data)
+        serializer = CadastroTecnicosSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'message': 'Atendimento cadastrado com Sucesso!'}, status=status.HTTP_200_OK)
+        else:
+            print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    except User.DoesNotExist:
-        serializer = UserSerializer(data=request.data)
+
+class CadastrarViabilidade(APIView):
+    def post(self, request):
+        serializer = CadastroViabilidadeSerializer(data=request.data)
+        print(serializer)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'message': 'Atendimento cadastrado com Sucesso!'}, status=status.HTTP_200_OK)
+        else:
+            print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    
-
-
-
-
-class LoginAPI(APIView):
-    def post(self, request, *args, **kwargs):
-        print(request.data)
-        serializer = LoginSerializer(data=request.data)
-        if serializer.is_valid():
-            username = serializer.validated_data['username']
-            password = serializer.validated_data['password']
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                token, _ = Token.objects.get_or_create(user=user)
-                django_login(request, user)
-                return Response({'message': 'Login bem-sucedido.', 'token': token.key}, status=status.HTTP_200_OK)
-            return Response({'error': 'Usuário ou senha incorretos.'}, status=status.HTTP_401_UNAUTHORIZED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-
-# Project APIs ---
 @api_view(['POST'])
 def create_tecnico(request):
     serializer = TecnicosSerializer(data=request.data)
@@ -112,7 +63,7 @@ def create_vendedor(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+#List
 class ListTecnicoViewSet(viewsets.ModelViewSet):
     queryset = Tecnicos.objects.all()
     serializer_class = TecSerializer
@@ -125,9 +76,74 @@ class ListAssuntosViewSet(viewsets.ModelViewSet):
     queryset = Assuntos.objects.all()
     serializer_class = AssunSerializer
 
+class ListViabilidadeView(APIView):
+    def get(self, request):
+        viabilidades = CadastroViabilidade.objects.all()
+        serializer = ViabilidadeListSerializer(viabilidades, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class ListTecnicoView(APIView):
+    def get(self, request):
+        viabilidades = CadastroTecnicos.objects.all()
+        serializer = TecnicoListSerializer(viabilidades, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# Stock  APIs --- POST
+# Autenticate ----------------------------------------------------------------------------------------------------#
+
+class LoginAPI(APIView):
+    def post(self, request, *args, **kwargs):
+        print(request.data)
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            username = serializer.validated_data['username']
+            password = serializer.validated_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                token, _ = Token.objects.get_or_create(user=user)
+                django_login(request, user)
+                return Response({'message': 'Login bem-sucedido.', 'token': token.key}, status=status.HTTP_200_OK)
+            return Response({'error': 'Usuário ou senha incorretos.'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LoginView(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        if not email or not password:
+            return Response({'error': 'Email e senha são obrigatórios.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({'error': 'Usuário não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if not check_password(password, user.password):
+            return Response({'error': 'Senha inválida.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['PUT','POST'])
+def user_view(request):
+    try:
+        user = User.objects.get(email=request.data['email'])
+        serializer = UserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except User.DoesNotExist:
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#----------------------------------------------------------------------------------------------------------------#
+
+#Stock-----------------------------------------------------------------------------------------------------------#
+
 class CadastrarEquipamentos(APIView):
     def post(self, request):
         serializer = EquipamentoSerialier(data=request.data)
@@ -172,7 +188,7 @@ def criar_conclusao_teste(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-#GET ---
+#List
 class ListFabricanteViewSet(viewsets.ModelViewSet):
     queryset = Fabricantes.objects.all()
     serializer_class = ListFabricante
@@ -196,28 +212,6 @@ class EquipamentoSListView(APIView):
         return Response(serializer.data)
     
 
-#Create Atendimento ---
-class CadastrarAtendimento(APIView):
-    def post(self, request):
-        serializer = CadastroTecnicosSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'message': 'Atendimento cadastrado com Sucesso!'}, status=status.HTTP_200_OK)
-        else:
-            print(serializer.errors)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class CadastrarViabilidade(APIView):
-    def post(self, request):
-        serializer = CadastroViabilidadeSerializer(data=request.data)
-        print(serializer)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'message': 'Atendimento cadastrado com Sucesso!'}, status=status.HTTP_200_OK)
-        else:
-            print(serializer.errors)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
+#----------------------------------------------------------------------------------------------------------------#
 
 
