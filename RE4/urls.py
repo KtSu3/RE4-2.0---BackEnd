@@ -16,6 +16,5 @@ urlpatterns = [
     path('apiP/', include('App.urls')),
 
     
-    
 ]   
 
