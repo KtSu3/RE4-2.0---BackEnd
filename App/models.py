@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser
 from dirtyfields import DirtyFieldsMixin 
-#------------------------------------#Projeto------------------------------------------------#
 
 class Campo1(models.TextChoices):
     SIM = 'S'
@@ -19,21 +18,18 @@ class Status(models.TextChoices):
 
 class Vendedores(models.Model):
     vendedor = models.CharField(max_length=100, unique=True)
-    # date = models.DateField(auto_now=True)
 
     def __str__(self):
         return f"{self.vendedor}"
     
 class Tecnicos(models.Model):
     tecnico = models.CharField(max_length=100, unique=True)
-    # date = models.DateField(auto_now=True)
 
     def __str__(self):
         return f"{self.tecnico}"
 
 class Assuntos(models.Model):
     assunto = models.CharField(max_length=100, unique=True)
-    # date = models.DateField(auto_now=True)
 
     def __str__(self):
         return f"{self.assunto}"
@@ -41,7 +37,7 @@ class Assuntos(models.Model):
 class CadastroViabilidade(models.Model):
     projeto_responsavel = models.CharField(max_length=100)
     vendedor_responsavel = models.ForeignKey(Vendedores, on_delete=models.CASCADE)
-    viavel = models.CharField(max_length=100)  # Corrigido de 'vivavel' para 'viavel'
+    viavel = models.CharField(max_length=100)
     descricao_projeto = models.TextField()
     descricao_comercial = models.TextField()
     date = models.DateField(auto_now=True)

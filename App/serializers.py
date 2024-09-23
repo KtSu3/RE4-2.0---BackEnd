@@ -31,9 +31,7 @@ class TecnicosSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         super(TecnicosSerializer, self).__init__(*args, **kwargs)
-        # Exemplo de manipulação de fields, garantindo que 'self.fields' é um dicionário
         for field_name, field in self.fields.items():
-            # Sua lógica aqui para modificar os campos
             print(f"Field: {field_name}, Value: {field}")
 
 
@@ -44,9 +42,7 @@ class AssuntosSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         super(AssuntosSerializer, self).__init__(*args, **kwargs)
-        # Exemplo de manipulação de fields, garantindo que 'self.fields' é um dicionário
         for field_name, field in self.fields.items():
-            # Sua lógica aqui para modificar os campos
             print(f"Field: {field_name}, Value: {field}")
 
 class VendedoresSerializer(serializers.ModelSerializer):
@@ -56,48 +52,23 @@ class VendedoresSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         super(VendedoresSerializer, self).__init__(*args, **kwargs)
-        # Exemplo de manipulação de fields, garantindo que 'self.fields' é um dicionário
         for field_name, field in self.fields.items():
-            # Sua lógica aqui para modificar os campos
             print(f"Field: {field_name}, Value: {field}")
 
 
 class CadastroTecnicosSerializer(serializers.ModelSerializer):
     tecnico_responsavel_id = serializers.PrimaryKeyRelatedField(
         queryset=Tecnicos.objects.all(),
-        source='tecnico_responsavel'  # deve ser o nome correto do campo no modelo
+        source='tecnico_responsavel' 
     )
     assunto_id = serializers.PrimaryKeyRelatedField(
         queryset=Assuntos.objects.all(),
-        source='assunto'  # este deve ser o nome correto do campo no modelo
+        source='assunto'
     )
 
     class Meta:
         model = CadastroTecnicos
         fields = ['projeto_responsavel', 'tecnico_responsavel_id', 'assunto_id', 'info_atendimento']
-
-
-# class CadastroViabilidadeSerializer(serializers.ModelSerializer):
-#     vendedor_responsavel_id = serializers.PrimaryKeyRelatedField(
-#         queryset=Vendedores.objects.all(),
-#         source='vendedor_responsavel'  
-#     )
-
-#     class Meta:
-#         model = CadastroViabilidade
-#         fields = ['projeto_responsavel', 'viavel', 'vendedor_responsavel_id', 'descricao_comercial', 'descricao_projeto']  
-
-
-
-# class CadastroViabilidade(serializers.ModelSerializer):
-#     vendedor_id = serializers.PrimaryKeyRelatedField(
-#         queryset=Vendedores.objects.all(),
-#         source='vendedor'   
-#     )
-#     class Meta:
-#         model = Vendedores
-#         fields = ['projeto_responsavel', 'descricao_projeto', 'descricao_comercial', 'vendedor_responsavel_id' ]
-
 
 #----------------------------------Estoque----------------------------------#
 

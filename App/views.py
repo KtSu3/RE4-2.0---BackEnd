@@ -41,7 +41,6 @@ class LoginView(APIView):
         except User.DoesNotExist:
             return Response({'error': 'Usuário não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Verifica se o hash da senha está correto
         if not check_password(password, user.password):
             return Response({'error': 'Senha inválida.'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -60,7 +59,6 @@ def user_view(request):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except User.DoesNotExist:
-        # Se o usuário não existir, realizamos o POST (criação)
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
